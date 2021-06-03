@@ -1,0 +1,161 @@
+nuget Packages
+-----------------
+Microsoft.EntityFrameworkCore.SqlServer
+Microsoft.EntityFrameworkCore.Tools
+Microsoft.AspNetCore.Identity.EntityFrameworkCore
+Microsoft.AspNetCore.Identity
+Microsoft.AspNetCore.Authentication.JwtBearer
+Log4Net
+
+
+1. Open "VTSDatabaseScript" from package and execute in the sql server.
+2. Create user using below API Url 
+	   Type : Post 
+	   URL :  https://localhost:44379/User/UserRegister
+	   
+	   
+	  Sample Input :
+	   
+	   {
+			UserName : 'Ziya', // user name must be unique
+			UserPassword : 'Test@123456',
+			UserRoles:'Admin',
+			UserEmailId:'rafiqand5@gmail.com'
+		}
+	   O/P
+	   {
+			"userId": "Ziya@SevenPeaks.com",
+			"statusCode": 200,
+			"statusDescription": "SUCCESS"
+		}
+	   
+	   Note : Remember the userId and password for login as user. Role is admin or user
+	   
+3. Login as user in the application, Using below API
+
+	    Type : Post
+        URL : https://localhost:44379/User/UserLogin
+		
+		Sample Input :
+		
+		{
+		UserName : 'Ziya',
+		Password : 'Test@123456'
+		}
+		
+		Output :
+		{		
+			"statusCode": 200,
+			"statusDescription": "SUCCESS",
+			"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiWml5YUBzZXZlbnBlYWtzLmNvbSIsImp0aSI6ImU4OTRkZWFkLTI0NGEtNGZlYy1iOTkzLTVkYWNmZjNmMjU1NyIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IkFkbWluIiwiZXhwIjoxNjE4Njc3Mjg4LCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjQ0Mzc5IiwiYXVkIjoiaHR0cDovL2xvY2FsaG9zdDo0NDM3OSJ9.m6mDARnoRWaVXwF2r164QhsO8Fd0H6ag2oHQ739nJLI",
+			"validUpTo": "2021-04-17T16:34:48Z"
+		}	
+	Note: Use JWT token in the header while invoking the API and as authorization bearer. eg :
+	
+4. Create driver profile using below api URL with token generated while login.
+
+	Type : Post
+    URL : https://localhost:44379/Driver/CreateDriver
+	
+	sample Input :
+	
+	{
+		Name:'Ziya',
+		Age:28,
+		Gender: 'Male',
+		MobileNumber: '633133640',//unique
+		LicenseNumber: '1234',
+		LicenseValid: '2015-02-06 07:30:00',	
+		Address1:'Bangkok',
+		Address2: 'Bangkok',
+		City:'Bangkok',
+		State:'Bangkok',
+		Country: 'Thailand'
+	}
+	Output
+	
+	{
+		"customerRelationshipNumber": "10002", // please note this id , this is used to track the driver detials , vechile information and Vechile location
+		"statusCode": 201,
+		"statusDescription": "SUCCESS"
+    } 
+	
+		
+ 5. Create Vechile information for driver profile using below api URL with token generated while login.
+
+	 Type : Post
+     URL :  https://localhost:44379/vechile/RegisterVechile
+	 
+	 Sample Input :
+	 
+	 	 
+	 {
+	 DriverId : "2", // driver Id which you have generated while driver creation
+	 Brand : 'Ford',
+	 Model : 'Lux200',
+	 Number :'008', // must be unique value
+	 EngineChaseNumber :'xsaewert1234', // must be unique value 
+	 PurchaseDate : '04-12-2020',
+	 VechileCondition : 'Good'
+}
+	 
+	 Output :
+	 
+	 {
+	 "StatusCode": 201,
+	 "StatusDescription": "SUCCESS,Ford Vechile successfully attached to the Driver 10021"
+	 }
+	 
+6. 	 based on driver id location information has been tracked for every 30 sec for vechile that has been implemented in the index.html page.run the webapi solution to see the same.
+    
+	Type : Post
+    URL : https://localhost:44379/vechile/TrackLocation
+
+	Sample Input :
+	
+	{
+	DriverId : '2', // forien key driver id must be exist in the driver table
+	Latitude: '13.6892022',
+	Longitude: '100.5490483',
+	VechileNumber:'008', // forien key vechical number must be exist in the vechile table
+ 	WatcherId:'100'
+   }
+
+
+    Sample Output : 
+ 
+	 {
+	 "StatusCode": 201,
+	 "StatusDescription": "SUCCESS,Ford Vechile successfully attached to the Driver 10021"
+	 }
+
+
+7.  To get driver current location 
+
+     Type : Get
+     URL : https://localhost:44379/Vechile/GetCurrentLocationByDriverID/2    // driverId
+	 
+     
+	 
+8. To get driver location history 
+
+     Type : Get
+     URL : https://localhost:44379/Vechile/GetLocationHistoryByDriverId/2      // driverId
+	 
+	 
+	 {
+    "driverLocationHistoryData": [
+        {
+            "locationDatetime": "2021-04-17T16:18:45.567",
+            "latitude": "13.6892022",
+            "longitude": "100.5490483"
+        },
+        {
+            "locationDatetime": "2021-04-17T19:02:35.617",
+            "latitude": "13.6892022",
+            "longitude": "100.5490483"
+        }
+    ],
+    "statusCode": 200,
+    "statusDescription": "SUCCESS"
+}
